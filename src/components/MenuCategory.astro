@@ -1,0 +1,25 @@
+---
+import type { MenuSectionData } from '../types/Menu';
+import MenuItem from './MenuItem.astro';
+
+interface Props {
+    section: MenuSectionData;
+}
+
+const { section } = Astro.props;
+---
+
+<!-- Agregamos el ID aquí para que el ancla funcione -->
+<section id={section.id} class="menu-category mb-12 scroll-mt-20">
+    <div class="relative mb-8 text-center">
+        <h2 class="text-3xl font-bold text-[#1a2f4c] pb-4 inline-block relative">
+            {section.id}
+            <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-[#ff4e20] rounded-full"></span>
+        </h2>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {section.products.map((product) => (
+            <MenuItem product={product} />
+        ))}
+    </div>
+</section>

@@ -1,0 +1,49 @@
+---
+interface Props {
+    categories: string[];
+}
+
+const { categories } = Astro.props;
+---
+
+<nav class="category-nav">
+    <ul class="nav-list">
+        {categories.map((cat) => (
+            <li>
+                <a href={`#${cat}`} class="nav-link">{cat}</a>
+            </li>
+        ))}
+    </ul>
+</nav>
+
+<style>
+    .category-nav {
+        padding: 0.5rem 0;
+        width: 100%;
+    }
+    .nav-list {
+        display: flex;
+        gap: 0.5rem;
+        list-style: none;
+        margin: 0;
+        padding: 0 1rem;
+        white-space: nowrap;
+    }
+    .nav-link {
+        text-decoration: none;
+        color: var(--color-primary);
+        font-family: var(--font-body);
+        font-weight: 700;
+        font-size: 0.95rem;
+        padding: 0.6rem 1.2rem;
+        border-radius: 30px;
+        background-color: transparent;
+        border: 1px solid #e0e0e0;
+        transition: all 0.3s ease;
+    }
+    .nav-link:hover {
+        background-color: var(--color-primary);
+        border-color: var(--color-primary);
+        color: white;
+    }
+</style>

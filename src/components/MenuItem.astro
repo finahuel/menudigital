@@ -1,0 +1,52 @@
+---
+import type { Product } from '../types/Menu';
+
+interface Props {
+    product: Product;
+}
+
+const { product } = Astro.props;
+
+// Convertimos el precio a número y calculamos el valor restando el 17.4%
+// Formato de entrada: "$5.000,00" -> Eliminamos puntos de miles, cambiamos coma por punto, quitamos $
+const rawPrice = String(product.Precio);
+const cleanPrice = rawPrice.replace(/\./g, '').replace(',', '.').replace(/[^0-9.]/g, '');
+const priceNumeric = parseFloat(cleanPrice);
+
+// Formateamos la salida usando locale español para mantener la coma decimal (ej: 4.130,00)
+const priceWithoutTax = !isNaN(priceNumeric) 
+    ? (priceNumeric * (1 - 0.174)).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) 
+    : null;
+---
+
+<div class="menu-item flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 w-full" data-search={`${product.Producto} ${product.Ingrediente || ''}`.toLowerCase()}>
+    <div class="flex flex-col pr-4">
+        <h3 class="text-[#1a2f4c] font-bold text-[15px] sm:text-base tracking-tight">
+            {product.Producto}
+        </h3>
+        
+        <p class="text-slate-500 text-[11px] sm:text-xs uppercase mt-1">
+            {product.Ingrediente}
+        </p>
+        
+        <p class="text-[#ff4e20] font-bold text-lg sm:text-xl mt-2">
+            {product.Precio}
+        </p>
+        
+        {priceWithoutTax && (
+            <p class="text-slate-400 text-[11px] sm:text-xs italic mt-0.5">
+                Sin impuestos nacionales: $ {priceWithoutTax}
+            </p>
+        )}
+    </div>
+    {product.Foto && (
+        <div class="shrink-0">
+            <img 
+                src={product.Foto} 
+                alt={product.Producto} 
+                class="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg" 
+                loading="lazy" 
+            />
+        </div>
+    )}
+</div>

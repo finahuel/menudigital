@@ -1,0 +1,21 @@
+{
+  "name": "j-digimenu",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5.17.1",
+    "papaparse": "^5.5.3",
+    "tailwind": "^4.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.18",
+    "@types/papaparse": "^5.5.2",
+    "tailwindcss": "^4.0.0"
+  }
+}

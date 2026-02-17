@@ -1,0 +1,103 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import CategoryNav from '../components/CategoryNav.astro';
+import MenuCategory from '../components/MenuCategory.astro';
+import { fetchMenuData } from '../services/menuService';
+
+// Obtenemos los datos en tiempo de construcción (o en cada request si es SSR)
+const menuData = await fetchMenuData();
+const categories = menuData.map(section => section.id);
+---
+
+<Layout title="Bienvenido a Digimenu">
+	<Hero />
+	
+	<!-- Contenedor Sticky (Buscador + Navbar) -->
+	<div class="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-sm transition-all duration-300 pb-3">
+		<div class="max-w-2xl mx-auto px-4 pt-4 pb-2">
+			<div class="relative group">
+				<input type="text" id="searchInput" placeholder="Buscar en el menú..." class="w-full pl-12 pr-4 py-3 bg-white border border-black rounded-xl focus:border-[#ff4e20] focus:ring-2 focus:ring-[#ff4e20]/20 outline-none transition-all text-gray-700 placeholder-gray-500" />
+				<svg xmlns="http://www.w3.org/2000/svg" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#ff4e20] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+				</svg>
+			</div>
+		</div>
+		
+		<!-- Navegación con flechas -->
+		<div class="relative max-w-2xl mx-auto group">
+			<button id="nav-prev" class="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white/90 p-1.5 rounded-full shadow-md text-[#ff4e20] hover:bg-white transition-all flex" aria-label="Anterior">
+				<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+				</svg>
+			</button>
+			
+			<div id="nav-container" class="overflow-x-auto scrollbar-hide px-2 sm:px-10">
+				<CategoryNav categories={categories} />
+			</div>
+
+			<button id="nav-next" class="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white/90 p-1.5 rounded-full shadow-md text-[#ff4e20] hover:bg-white transition-all flex" aria-label="Siguiente">
+				<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+				</svg>
+			</button>
+		</div>
+	</div>
+
+	<main class="container">
+		{menuData.map((section) => (
+			<MenuCategory section={section} />
+		))}
+	</main>
+</Layout>
+
+<style>
+	.container {
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 2rem 1rem;
+	}
+	.scrollbar-hide::-webkit-scrollbar {
+		display: none;
+	}
+	.scrollbar-hide {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+</style>
+
+<script>
+	const searchInput = document.getElementById('searchInput');
+	const menuItems = document.querySelectorAll('.menu-item');
+	const menuCategories = document.querySelectorAll('.menu-category');
+	
+	// Lógica de las flechas del navbar
+	const navContainer = document.getElementById('nav-container');
+	const navPrev = document.getElementById('nav-prev');
+	const navNext = document.getElementById('nav-next');
+
+	navPrev?.addEventListener('click', () => {
+		navContainer?.scrollBy({ left: -200, behavior: 'smooth' });
+	});
+
+	navNext?.addEventListener('click', () => {
+		navContainer?.scrollBy({ left: 200, behavior: 'smooth' });
+	});
+
+	searchInput?.addEventListener('input', (e) => {
+		// @ts-ignore
+		const term = e.target.value.toLowerCase().trim();
+
+		menuItems.forEach((item) => {
+			// @ts-ignore
+			const searchData = item.dataset.search || '';
+			const isVisible = searchData.includes(term);
+			item.classList.toggle('hidden', !isVisible);
+		});
+
+		menuCategories.forEach((category) => {
+			const visibleItems = category.querySelectorAll('.menu-item:not(.hidden)');
+			category.classList.toggle('hidden', visibleItems.length === 0);
+		});
+	});
+</script>
